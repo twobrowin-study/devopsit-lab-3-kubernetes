@@ -1,0 +1,88 @@
+# PosgreSQL Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgres-db
+
+---
+# PostgreSQL StatefulSet ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-db-config
+  namespace: postgres-db
+  labels:
+    app: postgresql-db
+data:
+  POSTGRES_PASSWORD: test123
+  PGDATA: /data/pgdata
+
+---
+# PostgreSQL StatefulSet Service 0
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db-lb-0
+  namespace: postgres-db
+spec:
+  selector:
+    app: postgresql-db-0
+  type: LoadBalancer
+  ports:
+  - port: 5432
+    targetPort: 5432
+
+---
+# PostgreSQL StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql-db
+  namespace: postgres-db
+spec:
+  serviceName: postgresql-db-service
+  selector:
+    matchLabels:
+      app: postgresql-db
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: postgresql-db
+    spec:
+      # Postgres Container
+      containers:
+      - name: postgresql-db
+        image: gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/postgres:10.4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        
+        # Resource Limits
+        resources:
+          requests:
+            memory: "265Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        # Data Volume
+        volumeMounts:
+        - name: postgresql-db-disk
+          mountPath: /data
+        
+        # Point to ConfigMap
+        envFrom:
+        - configMapRef:
+            name: postgres-db-config
+        
+  # Volume Claim
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-db-disk
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 25Gi

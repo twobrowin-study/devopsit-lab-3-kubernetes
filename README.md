@@ -118,7 +118,7 @@ Minikube запускается при помощи простой команд�
 * 🚨 Указан параметр `--base-image` с указанием образа, доступного из внутренней сети МГТУ им. Н.Э. Баумана
 
 ```bash
-minikube start --driver=docker --base-image='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/k8s-minikube/kicbase:v0.0.45'
+minikube start --driver=docker --base-image='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/k8s-minikube/kicbase:v0.0.45' --image-repository='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes' --binary-mirror='https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubelet'
 ```
 
 В случае, если не требуется использовать внутренние ресурсы МГТУ им. Н.Э. Баумана, параметр `--base-image` можно опустить.

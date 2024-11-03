@@ -18,15 +18,15 @@ data:
   PGDATA: /data/pgdata
 
 ---
-# PostgreSQL StatefulSet Service 0
+# PostgreSQL StatefulSet Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-db-lb-0
+  name: postgres-db-lb
   namespace: postgres-db
 spec:
   selector:
-    app: postgresql-db-0
+    app: postgresql-db
   type: LoadBalancer
   ports:
   - port: 5432

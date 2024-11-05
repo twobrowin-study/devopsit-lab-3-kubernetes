@@ -1,3 +1,5 @@
+kubeadm
 kubectl
+kubelet
 minikube
 *.pem

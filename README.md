@@ -109,6 +109,25 @@ sudo mv ./minikube /usr/local/bin/minikube
 minikube version
 ```
 
+### Кэширование бинарных файлов k8s во внутренней сети МГТУ им. Н.Э. Баумана
+
+Этот шаг можно пропустить в случае, если работа не происходит во внутренней сети МГТУ им. Н.Э. Баумана.
+
+Скачаем все необходимые бинарные файлы:
+
+```bash
+curl -LO https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubeadm/`cat versions/kube-binaries.txt`/kubeadm
+curl -LO https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubectl/`cat versions/kube-binaries.txt`/kubectl
+curl -LO https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubelet/`cat versions/kube-binaries.txt`/kubelet
+```
+
+Создадим директорию кеша и скопируем в неё все бинарные файлы:
+
+```bash
+mkdir -p ~/.minikube/cache/linux/amd64/v`cat versions/kube-binaries.txt`
+mv kubeadm kubectl kubelet ~/.minikube/cache/linux/amd64/v`cat versions/kube-binaries.txt`
+```
+
 ### Запуск Minikube
 
 Minikube запускается при помощи простой команды:
@@ -118,7 +137,7 @@ Minikube запускается при помощи простой команд�
 * 🚨 Указан параметр `--base-image` с указанием образа, доступного из внутренней сети МГТУ им. Н.Э. Баумана
 
 ```bash
-minikube start --driver=docker --base-image='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/k8s-minikube/kicbase:v0.0.45' --image-repository='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes' --binary-mirror='https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubelet'
+minikube start --driver=docker --base-image='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/k8s-minikube/kicbase:v0.0.45' --image-repository='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes' --kubernetes-version='v1.31.0'
 ```
 
 В случае, если не требуется использовать внутренние ресурсы МГТУ им. Н.Э. Баумана, параметр `--base-image` можно опустить.
@@ -441,8 +460,7 @@ Ingress - это описание, которое позволяет при по
 Для начала работы с Ingress следует его установить:
 
 ```bash
-minikube addons enable ingress --images='IngressController=gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/ingress-nginx/contro
-ller:v1.11.2,KubeWebhookCertgenCreate=gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/ingress-nginx/kube-webhook-certgen:v1.4.3,KubeWebhookCertgenPatch=gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/ingress-nginx/kube-webhook-certgen:v1.4.3'
+minikube addons enable ingress --images='IngressController=ingress-nginx/controller:v1.11.2,KubeWebhookCertgenCreate=ingress-nginx/kube-webhook-certgen:v1.4.3,KubeWebhookCertgenPatch=ingress-nginx/kube-webhook-certgen:v1.4.3'
 ```
 
 Флаг `--images` следует опустить если не используются внутренние ресурсы МГТУ им. Н.Э. Баумана.
@@ -509,8 +527,18 @@ curl --cacert cert.pem --resolve "hello-world.example:443:$( minikube ip )" -i h
 
 ## Полезные ссылки
 
-Очень распространённым является ипользование альтернативной утилиты для работы с Kubernetes API - HELM.
+### Полное удаление кластера Minikube
+
+Для полного удаления всех ресурсов Minikube, а также закешированных образов, следует:
+
+```bash
+minikube delete --all --purge
+```
+
+### Helm - средство управления кластером k8s
+
+Очень распространённым является ипользование альтернативной утилиты для работы с Kubernetes API - Helm.
 
 В дальнейшей работе будет полезно ознакомиться с её возможностями: шаблонизацией проекта, а также удобными средствами отката приложений.
 
-https://helm.sh/
+[Официальный сайт Helm](https://helm.sh/)

@@ -53,7 +53,7 @@ spec:
       # Postgres Container
       containers:
       - name: postgresql-db
-        image: gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/postgres:10.4
+        image: postgres:10.4
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5432

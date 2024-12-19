@@ -48,10 +48,10 @@ Minikube реализует в полном объёме API Kubernetes.
 Для работы в рамках лабораторной работы потребуется склонировать репозиторий:
 
 ```bash
-git clone https://gitlab.bmstu.ru/devops-dataops-intro/labs/lab-3-kubernetes.git
+git clone git@github.com:twobrowin-study/devopsit-lab-3-kubernetes.git
 ```
 
-📋 Если на рабочей машине не установлен Docker, следует воспользоваться инструкцией, [приведённой на странице ЛБ2](https://gitlab.bmstu.ru/devops-dataops-intro/labs/lab-2-docker#%D1%87%D0%B0%D1%81%D1%82%D1%8C-1--%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-docker)
+📋 Если на рабочей машине не установлен Docker, следует воспользоваться инструкцией, [приведённой на странице ЛБ2](https://github.com/twobrowin-study/devopsit-lab-2-docker#%D1%87%D0%B0%D1%81%D1%82%D1%8C-1--%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-docker)
 
 ### Установка Kubectl
 
@@ -61,12 +61,6 @@ git clone https://gitlab.bmstu.ru/devops-dataops-intro/labs/lab-3-kubernetes.git
 
 ```bash
 curl -LO https://dl.k8s.io/release/`curl -LS https://dl.k8s.io/release/stable.txt`/bin/linux/amd64/kubectl
-```
-
-🚨 Для доступа из внутренней сети МГТУ им. Н.Э. Баумана в открытый доступ выложена актуальная версия kubectl:
-
-```bash
-curl -LO https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubectl/`cat versions/kubectl.txt`/kubectl
 ```
 
 Сделаем бинарный файл исполняемым и переместим утилиту в директорию, по-умолчанию доступную из PATH:
@@ -90,12 +84,6 @@ kubectl version --client
 curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 ```
 
-🚨 Для доступа из внутренней сети МГТУ им. Н.Э. Баумана в открытый доступ выложена актуальная версия kubectl:
-
-```bash
-curl -LO https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/minikube/`cat versions/minikube.txt`/minikube
-```
-
 Сделаем бинарный файл исполняемым и переместим утилиту в директорию, по-умолчанию доступную из PATH:
 
 ```bash
@@ -109,25 +97,6 @@ sudo mv ./minikube /usr/local/bin/minikube
 minikube version
 ```
 
-### Кэширование бинарных файлов k8s во внутренней сети МГТУ им. Н.Э. Баумана
-
-Этот шаг можно пропустить в случае, если работа не происходит во внутренней сети МГТУ им. Н.Э. Баумана.
-
-Скачаем все необходимые бинарные файлы:
-
-```bash
-curl -LO https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubeadm/`cat versions/kube-binaries.txt`/kubeadm
-curl -LO https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubectl/`cat versions/kube-binaries.txt`/kubectl
-curl -LO https://gitlab.bmstu.ru/api/v4/projects/803/packages/generic/kubelet/`cat versions/kube-binaries.txt`/kubelet
-```
-
-Создадим директорию кеша и скопируем в неё все бинарные файлы:
-
-```bash
-mkdir -p ~/.minikube/cache/linux/amd64/v`cat versions/kube-binaries.txt`
-mv kubeadm kubectl kubelet ~/.minikube/cache/linux/amd64/v`cat versions/kube-binaries.txt`
-```
-
 ### Запуск Minikube
 
 Minikube запускается при помощи простой команды:
@@ -137,7 +106,7 @@ Minikube запускается при помощи простой команд�
 * 🚨 Указан параметр `--base-image` с указанием образа, доступного из внутренней сети МГТУ им. Н.Э. Баумана
 
 ```bash
-minikube start --driver=docker --base-image='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/k8s-minikube/kicbase:v0.0.45' --image-repository='gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes' --kubernetes-version='v1.31.0'
+minikube start --driver=docker
 ```
 
 В случае, если не требуется использовать внутренние ресурсы МГТУ им. Н.Э. Баумана, параметр `--base-image` можно опустить.
@@ -177,10 +146,8 @@ docker exec -it minikube bash
 В рамках настоящей лабораторной работы сосредоточимся на простейшем приложении:
 
 ```bash
-docker run -it --rm -p 8080:8080 gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/samples/hello-app:1.0
+docker run -it --rm -p 8080:8080 gcr.io/google-samples/hello-app:1.0
 ```
-
-В случае, если не используются внутренние ресурсы МГТУ им. Н.Э. Баумана, следует воспользоваться образом `gcr.io/google-samples/hello-app:1.0`.
 
 Приложение позволяет при помощи web-интерфейса устанавливать то, какой именно контейнер был вызван.
 
@@ -199,7 +166,7 @@ Hostname: 7dc24d1c60bd
 Запустим простое приложение в виде пода k8s:
 
 ```bash
-kubectl run hello --image gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/samples/hello-app:1.0
+kubectl run hello --image gcr.io/google-samples/hello-app:1.0
 ```
 
 **В отчёте следует описать различие результата запуска контейнера в Docker и как пода k8s.**
@@ -275,7 +242,7 @@ spec:
     spec:
       containers:
       - name: hello
-        image: gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/samples/hello-app:1.0
+        image: gcr.io/google-samples/hello-app:1.0
         ports:
         - containerPort: 8080
 ```
@@ -409,7 +376,7 @@ minikube tunnel
 
 Однако, приведённый метод развёртывания имеет проблемы идентификации к какому именно поду будет выполнено обращение.
 
-Исследуем эти проблемы, для этого следует заменить образ пода Postgres на использованный нами в первых опытах `gitlab.bmstu.ru:5050/devops-dataops-intro/labs/lab-3-kubernetes/samples/hello-app:1.0`, а также изменить используемые приложением порты.
+Исследуем эти проблемы, для этого следует заменить образ пода Postgres на использованный нами в первых опытах `gcr.io/google-samples/hello-app:1.0`, а также изменить используемые приложением порты.
 
 Далее, следует автоматически выполнить 10-20 запросов к сервису и определить к каким подам будет выполнен запрос.
 
